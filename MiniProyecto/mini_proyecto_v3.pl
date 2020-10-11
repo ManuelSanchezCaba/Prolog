@@ -1,0 +1,97 @@
+sentence(S) :- go(Out), s(S, Out, []).
+
+s(s(NP, VP)) --> np(singular, NP), vp(singular, VP).
+s(s(NP, VP)) --> np(plural, NP), vp(plural, VP).
+
+np(X, np(Det, Noun)) --> det(X, Det), noun(X, Noun).
+np(X, np(Det, Noun, RlCl)) --> det(X, Det), noun(X, Noun), rlCl(RlCl).
+np(X, np(Quant, Noun)) --> quant(X, Quant), noun(X, Noun).
+np(X, np(Quant, Noun, RlCl)) --> quant(X, Quant), noun(X, Noun), rlCl(RlCl).
+np(X, np(Quant, Adj, Noun)) --> quant(X, Quant), adj(Adj), noun(X, Noun).
+np(X, np(Adj, Noun, Vp)) --> adj(Adj), noun(X, Noun), vp(X, Vp).
+np(X, np(Quant, Noun, RlCl, Np)) --> quant(X, Quant), noun(X, Noun), rlCl(RlCl), np(X, Np).
+np(X, np(Quant, Noun, RlCl, Vp)) --> quant(X, Quant), noun(X, Noun), rlCl(RlCl), vp(X, Vp).
+
+vp(X, vp(Verb)) --> verb(X, Verb).
+vp(X, vp(Verb, Np)) --> verb(X, Verb), np(X, Np).
+vp(X, vp(Verb, Adj)) --> verb(X, Verb), adj(Adj).
+vp(X, vp(BeVerb, Adj)) --> beVerb(X, BeVerb), adj(Adj).
+
+noun(singular, noun(apple)) --> [apple].
+noun(plural, noun(apples)) --> [apples].
+noun(singular, noun(carrot)) --> [carrot].
+noun(plural, noun(carrots)) --> [carrots].
+noun(singular, noun(watermelon)) --> [watermelon].
+noun(plural, noun(watermelons)) --> [watermelons].
+noun(plural, noun(people)) --> [people].
+noun(singular, noun(people)) --> [people].
+noun(singular, noun(person)) --> [person].
+noun(singular, noun(boy)) --> [boy].
+noun(plural, noun(boys)) --> [boys].
+noun(singular, noun(girl)) --> [girl].
+noun(plural, noun(girls)) --> [girls].
+noun(singular, noun(government)) --> [government].
+noun(singular, noun(flavors)) --> [flavors].
+noun(plural, noun(flavor)) --> [flavor].
+noun(singular, noun(rabbit)) --> [rabbit].
+noun(plural, noun(rabbits)) --> [rabbits].
+
+verb(plural, verb(run)) --> [run].
+verb(singular, verb(runs)) --> [runs].
+verb(plural, verb(contain)) --> [contain].
+verb(singular, verb(contains)) --> [contains].
+verb(plural, verb(eat)) --> [eat].
+verb(singular, verb(eats)) --> [eats].
+verb(plural, verb(conscript)) --> [conscript].
+verb(singular, verb(conscripts)) --> [conscripts].
+verb(plural, verb(like)) --> [like].
+verb(singular, verb(likes)) --> [likes].
+verb(plural, verb(taste)) --> [taste].
+
+beVerb(singular, beVerb(is)) --> [is].
+beVerb(_, beVerb(are)) --> [are].
+
+
+det(singular, det('A')) --> ['A'].
+det(singular, det(a)) --> [a].
+det(singular, det('The')) --> ['The'].
+det(plural, det('The')) --> ['The'].
+
+rlCl(rlCl(that)) --> [that].
+rlCl(rlCl(like)) --> [like].
+
+adj(adj(good)) --> [good].
+adj(adj(pacifist)) --> [pacifist].
+adj(adj(evil)) --> [evil].
+adj(adj(divine)) --> [divine].
+
+
+quant(_, quant(all)) --> [all].
+quant(_, quant(some)) --> [some].
+quant(_, quant('All')) --> ['All'].
+quant(_, quant('Some')) --> ['Some'].
+
+go(Out):-
+	read(X),
+	name(X,L),
+	tokenize(L,Out).
+
+tokenize([],[]):-!.
+tokenize(L,[Word|Out]):- 
+    L\==[], 
+    tokenize(L,Rest,WordChs), 
+    name(Word,WordChs), 
+    tokenize(Rest,Out).
+tokenize([],[],[]):- !.
+tokenize([46|_],[],[]):- !.
+tokenize([32|T],T,[]):- !.
+tokenize([H|T],Rest,[H|List]) :- tokenize(T,Rest,List).
+
+/* Test Cases
+ * s(T, [all, boys, run], []). TRUE
+ * s(T, ['All', boys, like, all, watermelons, that, contain, some, divine, flavor], []). TRUE
+ * s(T, ['Some', boy, eats, some, apple], []). TRUE
+ * s(T, ['Some', government, conscripts, some, pacifist, people], []). TRUE
+ * s(T, ['All', government, that, conscripts, pacifist, people, are, evil], []). TRUE
+ * 
+ * */

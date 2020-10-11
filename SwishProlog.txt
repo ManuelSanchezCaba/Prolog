@@ -1,0 +1,7 @@
+t1 :- p(0,Y,Y).
+t2 :- not(p(X,V,X)), p(s(X),V,s(Z)).
+t3 :- q(0).
+t4 :- not(q(X)), q(s(s(X))).
+c1 :- not(p(X,s(W), s(s(0)))), not(q(s(X))).
+
+t1, t2, t3, t4 = c1
